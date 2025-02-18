@@ -1,0 +1,19 @@
+package main
+
+import (
+	"fmt"
+
+	"github.com/Al3XS0n-sempai/distributed_systems/internal/repository"
+	"github.com/Al3XS0n-sempai/distributed_systems/internal/service"
+)
+
+func main() {
+	repo := repository.NewInMemoryCache()
+	service := service.NewSimpleService(repo)
+
+	service.Init()
+
+	if err := service.Run(); err != nil {
+		fmt.Printf("%v", err)
+	}
+}
