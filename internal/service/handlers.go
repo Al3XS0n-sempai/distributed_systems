@@ -8,37 +8,46 @@ import (
 )
 
 func (service *SimpleService) setValueHandler(w http.ResponseWriter, r *http.Request) {
-	var payload struct {
-		Key   int `json:"key"`
-		Value int `json:"value"`
-	}
+	var sKey, sValue string
 
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		http.Error(w, "Wrong json, should be 2 keys of type int: key and value", http.StatusBadRequest)
+	if sKey = r.URL.Query().Get("key"); sKey == "" {
+		http.Error(w, "BadRequest: expected 'key' in query parameters", http.StatusBadRequest)
 		return
 	}
-
-	if err := service.repository.Set(payload.Key, payload.Value); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func (service *SimpleService) getValueHandler(w http.ResponseWriter, r *http.Request) {
-	var skey string
-
-	if skey = r.PathValue("key"); skey == "" {
-		http.Error(w, "BadRequest: expected path /api/get/{key}, where key is an interger number", http.StatusBadRequest)
+	if sValue = r.URL.Query().Get("value"); sValue == "" {
+		http.Error(w, "BadRequest: expected 'value' in query parameters", http.StatusBadRequest)
 		return
 	}
 
 	var key, value int
 	var err error
 
-	if key, err = strconv.Atoi(skey); err != nil {
-		http.Error(w, "key in /api/get/{key}, should be a valid integer number", http.StatusBadRequest)
+	if key, err = strconv.Atoi(sKey); err != nil {
+		http.Error(w, "'key' should be a valid integer number", http.StatusBadRequest)
+		return
+	}
+
+	if value, err = strconv.Atoi(sValue); err != nil {
+		http.Error(w, "'value' should be a valid integer number", http.StatusBadRequest)
+		return
+	}
+
+	service.repository.Set(key, value)
+}
+
+func (service *SimpleService) getValueHandler(w http.ResponseWriter, r *http.Request) {
+	var sKey string
+
+	if sKey = r.URL.Query().Get("key"); sKey == "" {
+		http.Error(w, "BadRequest: expected 'key' in query parameters", http.StatusBadRequest)
+		return
+	}
+
+	var key, value int
+	var err error
+
+	if key, err = strconv.Atoi(sKey); err != nil {
+		http.Error(w, "'key' should be a valid integer number", http.StatusBadRequest)
 		return
 	}
 
@@ -48,5 +57,4 @@ func (service *SimpleService) getValueHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	json.NewEncoder(w).Encode(map[string]int{"value": value})
-	w.WriteHeader(http.StatusOK)
 }

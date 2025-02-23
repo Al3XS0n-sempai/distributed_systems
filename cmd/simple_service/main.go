@@ -13,7 +13,7 @@ func main() {
 
 	service.Init()
 
-	if err := service.Run(); err != nil {
+	if err := service.Run("0.0.0.0:8000"); err != nil {
 		fmt.Printf("%v", err)
 	}
 }

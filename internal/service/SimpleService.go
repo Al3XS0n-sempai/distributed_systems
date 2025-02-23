@@ -37,20 +37,20 @@ func NewSimpleService(repo SimpleServiceRepository) *SimpleService {
 }
 
 func (service *SimpleService) Init() {
-	service.mux.HandleFunc("POST /api/set/", service.setValueHandler)
-	service.mux.HandleFunc("GET /api/get/{key}/", service.getValueHandler)
+	service.mux.HandleFunc("POST /put", service.setValueHandler)
+	service.mux.HandleFunc("GET /get", service.getValueHandler)
 	// service.mux.HandleFunc("GET /api/swagger/", service.getSwagger)
 
 	service.initialized = true
 }
 
-func (service *SimpleService) Run() error {
+func (service *SimpleService) Run(addr string) error {
 	if !service.initialized {
 		return errors.New("service was not initialized before Run().\nCall Init() directly")
 	}
 
-	fmt.Println("Starting server at 0.0.0.0:8080")
-	if err := http.ListenAndServe("0.0.0.0:8080", service.mux); err != nil {
+	fmt.Printf("Starting server at %s", addr)
+	if err := http.ListenAndServe(addr, service.mux); err != nil {
 		return err
 	}
 
