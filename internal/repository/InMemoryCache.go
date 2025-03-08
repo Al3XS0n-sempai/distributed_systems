@@ -7,10 +7,10 @@ import (
 
 type InMemoryCache struct {
 	m     sync.RWMutex
-	cache map[int]int
+	cache map[string]string
 }
 
-func (db *InMemoryCache) Set(key, value int) error {
+func (db *InMemoryCache) Set(key, value string) error {
 	db.m.Lock()
 	defer db.m.Unlock()
 	db.cache[key] = value
@@ -18,13 +18,13 @@ func (db *InMemoryCache) Set(key, value int) error {
 	return nil
 }
 
-func (db *InMemoryCache) Get(key int) (int, error) {
+func (db *InMemoryCache) Get(key string) (string, error) {
 	db.m.RLock()
 	defer db.m.RUnlock()
 	value, ok := db.cache[key]
 
 	if !ok {
-		return value, fmt.Errorf("no suck value with suck key (%d)", key)
+		return value, fmt.Errorf("no suck value with suck key (%s)", key)
 	}
 
 	return value, nil
@@ -32,6 +32,6 @@ func (db *InMemoryCache) Get(key int) (int, error) {
 
 func NewInMemoryCache() *InMemoryCache {
 	return &InMemoryCache{
-		cache: make(map[int]int, 100),
+		cache: make(map[string]string, 100),
 	}
 }

@@ -2,13 +2,15 @@ package service
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/Al3XS0n-sempai/distributed_systems/internal/middlewares"
 )
 
 type SimpleServiceRepository interface {
-	Set(key, value int) error
-	Get(key int) (int, error)
+	Set(key, value string) error
+	Get(key string) (string, error)
 }
 
 // SimpleService is a simple service that listens 2 HTTP endpoints:
@@ -49,8 +51,17 @@ func (service *SimpleService) Run(addr string) error {
 		return errors.New("service was not initialized before Run().\nCall Init() directly")
 	}
 
-	fmt.Printf("Starting server at %s", addr)
-	if err := http.ListenAndServe(addr, service.mux); err != nil {
+	middlewaresStack := middlewares.StackMiddlewares(
+		middlewares.LoggingMiddleware,
+	)
+
+	server := http.Server{
+		Addr:    addr,
+		Handler: middlewaresStack(service.mux),
+	}
+
+	log.Printf("Starting server at %s", addr)
+	if err := server.ListenAndServe(); err != nil {
 		return err
 	}
 

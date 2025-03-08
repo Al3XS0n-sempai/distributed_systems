@@ -1,34 +1,19 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 func (service *SimpleService) setValueHandler(w http.ResponseWriter, r *http.Request) {
-	var sKey, sValue string
+	var key, value string
 
-	if sKey = r.URL.Query().Get("key"); sKey == "" {
+	if key = r.URL.Query().Get("key"); key == "" {
 		http.Error(w, "BadRequest: expected 'key' in query parameters", http.StatusBadRequest)
 		return
 	}
-	if sValue = r.URL.Query().Get("value"); sValue == "" {
+	if value = r.URL.Query().Get("value"); value == "" {
 		http.Error(w, "BadRequest: expected 'value' in query parameters", http.StatusBadRequest)
-		return
-	}
-
-	var key, value int
-	var err error
-
-	if key, err = strconv.Atoi(sKey); err != nil {
-		http.Error(w, "'key' should be a valid integer number", http.StatusBadRequest)
-		return
-	}
-
-	if value, err = strconv.Atoi(sValue); err != nil {
-		http.Error(w, "'value' should be a valid integer number", http.StatusBadRequest)
 		return
 	}
 
@@ -36,25 +21,20 @@ func (service *SimpleService) setValueHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (service *SimpleService) getValueHandler(w http.ResponseWriter, r *http.Request) {
-	var sKey string
+	var key string
 
-	if sKey = r.URL.Query().Get("key"); sKey == "" {
+	if key = r.URL.Query().Get("key"); key == "" {
 		http.Error(w, "BadRequest: expected 'key' in query parameters", http.StatusBadRequest)
 		return
 	}
 
-	var key, value int
+	var value string
 	var err error
 
-	if key, err = strconv.Atoi(sKey); err != nil {
-		http.Error(w, "'key' should be a valid integer number", http.StatusBadRequest)
-		return
-	}
-
 	if value, err = service.repository.Get(key); err != nil {
-		http.Error(w, fmt.Sprintf("key %d not found", key), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("key '%s' not found", key), http.StatusNotFound)
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]int{"value": value})
+	w.Write([]byte(value))
 }
