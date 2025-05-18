@@ -16,7 +16,7 @@ type SimpleServiceRepository interface {
 // SimpleService is a simple service that listens 2 HTTP endpoints:
 //   - /api/set
 //   - /api/get
-//   - /api/swagger
+//   - /api/swagger -TODO
 //
 // API Specification can be checked in swagger file in /api/REST directory
 type SimpleService struct {
