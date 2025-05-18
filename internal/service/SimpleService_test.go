@@ -24,12 +24,12 @@ var (
 		value:          3000,
 		expectedStatus: http.StatusOK,
 	}
-	testPutBadKeyEnv = testEnv{
+	testPutNoKeyEnv = testEnv{
 		key:            "lol",
 		value:          123,
 		expectedStatus: http.StatusBadRequest,
 	}
-	testPutBadValueEnv = testEnv{
+	testPutNoValueEnv = testEnv{
 		key:            321,
 		value:          "kek",
 		expectedStatus: http.StatusBadRequest,
@@ -75,9 +75,9 @@ func TestPut(t *testing.T) {
 		}
 	})
 
-	t.Run("Test /put (Bad key)", func(t *testing.T) {
-		_env := testPutBadKeyEnv
-		path := fmt.Sprintf("/put?key=%v&value=%v", _env.key, _env.value)
+	t.Run("Test /put (No key)", func(t *testing.T) {
+		_env := testPutNoKeyEnv
+		path := fmt.Sprintf("/put?value=%v", _env.value)
 		request, _ := http.NewRequest(http.MethodPost, path, nil)
 		response := httptest.NewRecorder()
 
@@ -92,9 +92,9 @@ func TestPut(t *testing.T) {
 		}
 	})
 
-	t.Run("Test /put (Bad value)", func(t *testing.T) {
-		_env := testPutBadValueEnv
-		path := fmt.Sprintf("/put?key=%v&value=%v", _env.key, _env.value)
+	t.Run("Test /put (No value)", func(t *testing.T) {
+		_env := testPutNoValueEnv
+		path := fmt.Sprintf("/put?key=%v", _env.key)
 		request, _ := http.NewRequest(http.MethodPost, path, nil)
 		response := httptest.NewRecorder()
 

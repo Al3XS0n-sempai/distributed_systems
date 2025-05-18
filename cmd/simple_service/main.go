@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	repo := repository.NewInMemoryCache()
+	repo := repository.NewSyncMapInMemoryCache()
 	service := service.NewSimpleService(repo)
 
 	service.Init()
